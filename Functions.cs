@@ -33,10 +33,20 @@ namespace CloudBread_Scheduler1
             {
                 Console.WriteLine("CB task Starting {0} at CBProcessQueueMessage", bj.JobID);
 
-                Console.WriteLine("CB task Done {0} at CBProcessQueueMessage", bj.JobID);
-                /// sending notification
+                switch (bj.JobID)
+                {
+                    case "CDBatch-DAU":
 
+                        break;
+                    case "CDBatch-DARPU":
+                        break;
+                    case "CDBatch-HAU":
+                        break;
+                    default:
+                        break;
+                }
             }
+
             catch (Exception ex)
             {
 
@@ -112,6 +122,6 @@ namespace CloudBread_Scheduler1
             
 
         }
-
+        
     }
 }
