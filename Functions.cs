@@ -22,7 +22,7 @@ using System.Data.Sql;
 using System.Data.SqlClient;
 using Microsoft.Practices.TransientFaultHandling;
 using Microsoft.Practices.EnterpriseLibrary.WindowsAzure.TransientFaultHandling.SqlAzure;
-using CloudBread_Scheduler.globals;
+//using CloudBread_Scheduler.globals;
 
 namespace CloudBread_Scheduler
 {
@@ -37,7 +37,10 @@ namespace CloudBread_Scheduler
 
     public class Functions
     {
-        ///
+        public static string CBSchedulerDBConnectionString = ConfigurationManager.ConnectionStrings["CBSchedulerDBConnectionString"].ConnectionString;
+        public static int CloudBreadconRetryCount = int.Parse(ConfigurationManager.AppSettings["CloudBreadconRetryCount"]);
+        public static int CloudBreadconRetryFromSeconds = int.Parse(ConfigurationManager.AppSettings["CloudBreadconRetryFromSeconds"]);
+
         public static void CBProcessQueueMessage([QueueTrigger("cloudbread-batch")] CBBatchJob bj, int dequeueCount)
         {
             try
@@ -45,13 +48,13 @@ namespace CloudBread_Scheduler
                 Console.WriteLine("CB task Starting {0} at CBProcessQueueMessage", bj.JobID);
 
                 /// Database connection retry policy
-                RetryPolicy retryPolicy = new RetryPolicy<SqlAzureTransientErrorDetectionStrategy>(globalVal.conRetryCount, TimeSpan.FromSeconds(globalVal.conRetryFromSeconds));
+                RetryPolicy retryPolicy = new RetryPolicy<SqlAzureTransientErrorDetectionStrategy>(CloudBreadconRetryCount, TimeSpan.FromSeconds(CloudBreadconRetryFromSeconds));
 
                 switch (bj.JobID)
                 {
                     case "CDBatch-DAU":
 
-                        using (SqlConnection connection = new SqlConnection(globalVal.CBSchedulerDBConnectionString))
+                        using (SqlConnection connection = new SqlConnection(CBSchedulerDBConnectionString))
                         {
                             using (SqlCommand command = new SqlCommand("sspBatchDAU", connection))
                             {
@@ -64,7 +67,7 @@ namespace CloudBread_Scheduler
 
                     case "CDBatch-DARPU":
 
-                        using (SqlConnection connection = new SqlConnection(globalVal.CBSchedulerDBConnectionString))
+                        using (SqlConnection connection = new SqlConnection(CBSchedulerDBConnectionString))
                         {
                             using (SqlCommand command = new SqlCommand("sspBatchDARPU", connection))
                             {
@@ -77,7 +80,7 @@ namespace CloudBread_Scheduler
 
                     case "CDBatch-HAU":
 
-                        using (SqlConnection connection = new SqlConnection(globalVal.CBSchedulerDBConnectionString))
+                        using (SqlConnection connection = new SqlConnection(CBSchedulerDBConnectionString))
                         {
                             using (SqlCommand command = new SqlCommand("sspBatchHAU", connection))
                             {
@@ -101,7 +104,8 @@ namespace CloudBread_Scheduler
         }
 
         /// Timer trigger of CBProcessHAUTrigger
-        public static void CBProcessHAUTrigger([TimerTrigger("0 * */1 * * *")] TimerInfo timer)
+        //public static void CBProcessHAUTrigger([TimerTrigger("* * * */1 * *")] TimerInfo timer)
+        public static void CBProcessHAUTrigger([TimerTrigger("* * * */1 * *", RunOnStartup = true)] TimerInfo timer)
         {
             try
             {
@@ -134,6 +138,7 @@ namespace CloudBread_Scheduler
         }
 
         /// Timer trigger of CBProcessDAU_DARPUTrigger
+        //public static void CBProcessDAU_DARPUTrigger([TimerTrigger("0 5 12 * * *")] TimerInfo timer) // every day 12:05 
         public static void CBProcessDAU_DARPUTrigger([TimerTrigger("0 5 12 * * *")] TimerInfo timer) // every day 12:05 
         {
             try

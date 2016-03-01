@@ -10,11 +10,18 @@ using System.Text;
 using System.Threading.Tasks;
 using Slack.Webhooks;
 using System.Net.Mail;
-using CloudBread_Scheduler.globals;
+using System.Configuration;
+
+//using CloudBread_Scheduler.globals;
+
 namespace CloudBread_Scheduler
 {
     public static class CBNotification
     {
+        public static string CBNotiEmailSenderID = ConfigurationManager.AppSettings["CBNotiEmailSenderID"];
+        public static string CBNotiEmailSenderPassword = ConfigurationManager.AppSettings["CBNotiEmailSenderPassword"];
+        public static string CBNotiSlackWebhookURL = ConfigurationManager.AppSettings["CBNotiSlackWebhookURL"];
+
         /// @brief this function wrapping send email notication
         public static string SendEmail(string toAddress, string subject, string body)
         {
@@ -31,11 +38,11 @@ namespace CloudBread_Scheduler
                                     /// Port for SSL: 465
                     EnableSsl = true,
                     DeliveryMethod = SmtpDeliveryMethod.Network,
-                    Credentials = new System.Net.NetworkCredential(globalVal.CBNotiEmailSenderID, globalVal.CBNotiEmailSenderPassword),
+                    Credentials = new System.Net.NetworkCredential(CBNotiEmailSenderID, CBNotiEmailSenderPassword),
                     Timeout = 30000,
                 };
 
-                MailMessage message = new MailMessage(globalVal.CBNotiEmailSenderID, globalVal.CBNotiEmailSenderPassword, subject, body);
+                MailMessage message = new MailMessage(CBNotiEmailSenderID, CBNotiEmailSenderPassword, subject, body);
                 smtp.Send(message);
                 result = "ok";
 
@@ -54,7 +61,7 @@ namespace CloudBread_Scheduler
         public static void SendSlackMsg(string Channel, string Text, string Username)
         {
             // slack webhook configuration : https://cloudbread.slack.com/apps/manage/A0F7XDUAZ-incoming-webhooks 
-            var slackClient = new SlackClient(globalVal.CBNotiSlackWebhookURL);
+            var slackClient = new SlackClient(CBNotiSlackWebhookURL);
 
             var slackMessage = new SlackMessage
             {

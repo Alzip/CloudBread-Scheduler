@@ -8,11 +8,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Configuration;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using System.Diagnostics;
-using CloudBread_Scheduler.globals;
+//using CloudBread_Scheduler.globals;
 
 namespace CloudBread_Scheduler
 {
@@ -26,19 +26,25 @@ namespace CloudBread_Scheduler
             /// adding webjob conifg
             JobHostConfiguration config = new JobHostConfiguration();
             config.Tracing.ConsoleLevel = TraceLevel.Verbose;
-            
+
+            if (!VerifyConfiguration())
+            {
+                Console.ReadLine();
+                return;
+            }
+
             /// using timer
             config.UseTimers();
 
-            var host = new JobHost();
+            var host = new JobHost(config);
             // The following code ensures that the WebJob will be running continuously
             host.RunAndBlock();
         }
 
         private static bool VerifyConfiguration()
         {
-            string webJobsDashboard = globalVal.CBAzureWebJobsDashboard;
-            string webJobsStorage = globalVal.CBAzureWebJobsStorage;
+            string webJobsDashboard = ConfigurationManager.ConnectionStrings["AzureWebJobsDashboard"].ConnectionString;
+            string webJobsStorage = ConfigurationManager.ConnectionStrings["AzureWebJobsStorage"].ConnectionString;
 
             bool configOK = true;
             if (string.IsNullOrWhiteSpace(webJobsDashboard) || string.IsNullOrWhiteSpace(webJobsStorage))
