@@ -106,7 +106,7 @@ namespace CloudBread_Scheduler
 
                 /// send slack and email 
                 CBNotification.SendSlackMsg(CBNotiSlackChannel, title, CBNotiSlackUserName);
-                //CBNotification.SendEmail("sqlermail@gmail.com", title, body);
+                CBNotification.SendEmail(title, body);
             }
 
             catch (Exception ex)

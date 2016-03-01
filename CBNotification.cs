@@ -20,10 +20,12 @@ namespace CloudBread_Scheduler
     {
         public static string CBNotiEmailSenderID = ConfigurationManager.AppSettings["CBNotiEmailSenderID"];
         public static string CBNotiEmailSenderPassword = ConfigurationManager.AppSettings["CBNotiEmailSenderPassword"];
+        public static string CBNotiEmailSendToEmail = ConfigurationManager.AppSettings["CBNotiEmailSendToEmail"];
+
         public static string CBNotiSlackWebhookURL = ConfigurationManager.AppSettings["CBNotiSlackWebhookURL"];
 
         /// @brief this function wrapping send email notication
-        public static string SendEmail(string toAddress, string subject, string body)
+        public static string SendEmail(string subject, string body)
         {
             string result = "";
             try
@@ -42,7 +44,7 @@ namespace CloudBread_Scheduler
                     Timeout = 30000,
                 };
 
-                MailMessage message = new MailMessage(CBNotiEmailSenderID, toAddress, subject, body);
+                MailMessage message = new MailMessage(CBNotiEmailSenderID, CBNotiEmailSendToEmail, subject, body);
                 smtp.Send(message);
                 result = "ok";
 
