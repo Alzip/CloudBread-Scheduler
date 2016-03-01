@@ -1,10 +1,4 @@
-﻿/**
-* @peojct
-* @brief This functinos are used by batch scheduling service of CloudBread 
-* @author Dae Woo Kim
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,9 +16,8 @@ using System.Data.Sql;
 using System.Data.SqlClient;
 using Microsoft.Practices.TransientFaultHandling;
 using Microsoft.Practices.EnterpriseLibrary.WindowsAzure.TransientFaultHandling.SqlAzure;
-using CloudBread_Scheduler.globals;
 
-namespace CloudBread_Scheduler
+namespace CloudBread_Scheduler1
 {
     /// @brief this class is scheuder queue message format
     public class CBBatchJob
@@ -37,7 +30,8 @@ namespace CloudBread_Scheduler
 
     public class Functions
     {
-        ///
+        // This function will get triggered/executed when a new message is written 
+        // on an Azure Queue called queue.
         public static void CBProcessQueueMessage([QueueTrigger("cloudbread-batch")] CBBatchJob bj, int dequeueCount)
         {
             try
@@ -51,7 +45,7 @@ namespace CloudBread_Scheduler
                 {
                     case "CDBatch-DAU":
                         
-                        using (SqlConnection connection = new SqlConnection(globalVal.CBSchedulerDBConnectionString))
+                        using (SqlConnection connection = new SqlConnection(globalVal.DBConnectionString))
                         {
                             using (SqlCommand command = new SqlCommand("sspBatchDAU", connection))
                             {
@@ -64,7 +58,7 @@ namespace CloudBread_Scheduler
 
                     case "CDBatch-DARPU":
 
-                        using (SqlConnection connection = new SqlConnection(globalVal.CBSchedulerDBConnectionString))
+                        using (SqlConnection connection = new SqlConnection(globalVal.DBConnectionString))
                         {
                             using (SqlCommand command = new SqlCommand("sspBatchDARPU", connection))
                             {
@@ -77,7 +71,7 @@ namespace CloudBread_Scheduler
 
                     case "CDBatch-HAU":
 
-                        using (SqlConnection connection = new SqlConnection(globalVal.CBSchedulerDBConnectionString))
+                        using (SqlConnection connection = new SqlConnection(globalVal.DBConnectionString))
                         {
                             using (SqlCommand command = new SqlCommand("sspBatchHAU", connection))
                             {

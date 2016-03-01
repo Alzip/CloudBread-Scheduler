@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using System.Diagnostics;
-using CloudBread_Scheduler.globals;
 
 namespace CloudBread_Scheduler
 {
@@ -37,8 +36,8 @@ namespace CloudBread_Scheduler
 
         private static bool VerifyConfiguration()
         {
-            string webJobsDashboard = globalVal.CBAzureWebJobsDashboard;
-            string webJobsStorage = globalVal.CBAzureWebJobsStorage;
+            string webJobsDashboard = ConfigurationManager.ConnectionStrings["AzureWebJobsDashboard"].ConnectionString;
+            string webJobsStorage = ConfigurationManager.ConnectionStrings["AzureWebJobsStorage"].ConnectionString;
 
             bool configOK = true;
             if (string.IsNullOrWhiteSpace(webJobsDashboard) || string.IsNullOrWhiteSpace(webJobsStorage))
