@@ -42,7 +42,7 @@ namespace CloudBread_Scheduler
                     Timeout = 30000,
                 };
 
-                MailMessage message = new MailMessage(CBNotiEmailSenderID, CBNotiEmailSenderPassword, subject, body);
+                MailMessage message = new MailMessage(CBNotiEmailSenderID, toAddress, subject, body);
                 smtp.Send(message);
                 result = "ok";
 

@@ -40,6 +40,8 @@ namespace CloudBread_Scheduler
         public static string CBSchedulerDBConnectionString = ConfigurationManager.ConnectionStrings["CBSchedulerDBConnectionString"].ConnectionString;
         public static int CloudBreadconRetryCount = int.Parse(ConfigurationManager.AppSettings["CloudBreadconRetryCount"]);
         public static int CloudBreadconRetryFromSeconds = int.Parse(ConfigurationManager.AppSettings["CloudBreadconRetryFromSeconds"]);
+        public static string CBNotiSlackChannel = ConfigurationManager.AppSettings["CBNotiSlackChannel"];
+        public static string CBNotiSlackUserName = ConfigurationManager.AppSettings["CBNotiSlackUserName"];
 
         public static void CBProcessQueueMessage([QueueTrigger("cloudbread-batch")] CBBatchJob bj, int dequeueCount)
         {
@@ -90,9 +92,21 @@ namespace CloudBread_Scheduler
                             connection.Close();
                         }
                         break;
+                    case "test":
+                        Console.WriteLine("CB test done {0} at CBProcessQueueMessage", bj.JobID);
+                        break;
                     default:
                         break;
                 }
+
+                Console.WriteLine("CB task done {0} at CBProcessQueueMessage", bj.JobID);
+
+                string title = bj.JobID + " task done at " + bj.JobTriggerDT + ". track #" + bj.JobTrackID;
+                string body = "task info \n" + JsonConvert.SerializeObject(bj);
+
+                /// send slack and email 
+                CBNotification.SendSlackMsg(CBNotiSlackChannel, title, CBNotiSlackUserName);
+                //CBNotification.SendEmail("sqlermail@gmail.com", title, body);
             }
 
             catch (Exception ex)
@@ -103,9 +117,43 @@ namespace CloudBread_Scheduler
 
         }
 
-        /// Timer trigger of CBProcessHAUTrigger
-        //public static void CBProcessHAUTrigger([TimerTrigger("* * * */1 * *")] TimerInfo timer)
-        public static void CBProcessHAUTrigger([TimerTrigger("* * * */1 * *", RunOnStartup = true)] TimerInfo timer)
+        //////////////////////////////////////////////////////////////
+        /// @brief Timer trigger of testProcess. one time test on startup and every two min. trigger
+        //////////////////////////////////////////////////////////////
+        public static void testProcess([TimerTrigger("0 */2 * * * *", RunOnStartup = true)] TimerInfo timer)
+        {
+            try
+            {
+                Console.WriteLine("CB test timer starting");
+
+                CBBatchJob bj = new CBBatchJob();
+                bj.JobID = "test";
+                bj.JobTitle = "this is developer test job";
+                bj.JobTriggerDT = DateTimeOffset.UtcNow.ToString();
+                bj.JobTrackID = Guid.NewGuid().ToString();
+
+                /// send message to cloudbread-batch queue
+                /// Azure Queue Storage connection retry policy
+                var queueStorageRetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(2), 10);
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.ConnectionStrings["AzureWebJobsStorage"].ConnectionString);
+                CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
+                queueClient.DefaultRequestOptions.RetryPolicy = queueStorageRetryPolicy;
+                CloudQueue queue = queueClient.GetQueueReference("cloudbread-batch");
+                queue.AddMessage(new CloudQueueMessage(JsonConvert.SerializeObject(bj)));
+
+                Console.WriteLine("CB test timer done");
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+        }
+
+        /// Timer trigger of CBProcessHAUTrigger 
+        public static void CBProcessHAUTrigger([TimerTrigger("0 10 * * * *")] TimerInfo timer)
         {
             try
             {
@@ -138,7 +186,6 @@ namespace CloudBread_Scheduler
         }
 
         /// Timer trigger of CBProcessDAU_DARPUTrigger
-        //public static void CBProcessDAU_DARPUTrigger([TimerTrigger("0 5 12 * * *")] TimerInfo timer) // every day 12:05 
         public static void CBProcessDAU_DARPUTrigger([TimerTrigger("0 5 12 * * *")] TimerInfo timer) // every day 12:05 
         {
             try
