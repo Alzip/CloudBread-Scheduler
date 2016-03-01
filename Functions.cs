@@ -38,11 +38,13 @@ namespace CloudBread_Scheduler1
             {
                 Console.WriteLine("CB task Starting {0} at CBProcessQueueMessage", bj.JobID);
 
+                /// Database connection retry policy
+                RetryPolicy retryPolicy = new RetryPolicy<SqlAzureTransientErrorDetectionStrategy>(globalVal.conRetryCount, TimeSpan.FromSeconds(globalVal.conRetryFromSeconds));
+
                 switch (bj.JobID)
                 {
                     case "CDBatch-DAU":
-                        /// Database connection retry policy
-                        RetryPolicy retryPolicy = new RetryPolicy<SqlAzureTransientErrorDetectionStrategy>(globalVal.conRetryCount, TimeSpan.FromSeconds(globalVal.conRetryFromSeconds));
+                        
                         using (SqlConnection connection = new SqlConnection(globalVal.DBConnectionString))
                         {
                             using (SqlCommand command = new SqlCommand("sspBatchDAU", connection))
@@ -56,8 +58,28 @@ namespace CloudBread_Scheduler1
 
                     case "CDBatch-DARPU":
 
+                        using (SqlConnection connection = new SqlConnection(globalVal.DBConnectionString))
+                        {
+                            using (SqlCommand command = new SqlCommand("sspBatchDARPU", connection))
+                            {
+                                connection.OpenWithRetry(retryPolicy);
+                                command.ExecuteNonQueryWithRetry(retryPolicy);
+                            }
+                            connection.Close();
+                        }
                         break;
+
                     case "CDBatch-HAU":
+
+                        using (SqlConnection connection = new SqlConnection(globalVal.DBConnectionString))
+                        {
+                            using (SqlCommand command = new SqlCommand("sspBatchHAU", connection))
+                            {
+                                connection.OpenWithRetry(retryPolicy);
+                                command.ExecuteNonQueryWithRetry(retryPolicy);
+                            }
+                            connection.Close();
+                        }
                         break;
                     default:
                         break;

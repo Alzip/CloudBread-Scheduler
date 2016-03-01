@@ -7,8 +7,8 @@
     <ProjectGuid>{2DFDD2BF-CCAD-40AA-8EE1-DC0A655A259E}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CloudBread_Scheduler1</RootNamespace>
-    <AssemblyName>CloudBread-Scheduler1</AssemblyName>
+    <RootNamespace>CloudBread_Scheduler</RootNamespace>
+    <AssemblyName>CloudBread-Scheduler</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -115,6 +115,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CBNotification.cs" />
+    <Compile Include="globalVal.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Functions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
