@@ -106,7 +106,7 @@ namespace CloudBread_Scheduler
 
                 /// send slack and email 
                 CBNotification.SendSlackMsg(CBNotiSlackChannel, title, CBNotiSlackUserName);
-                CBNotification.SendEmail(title, body);
+                // CBNotification.SendEmail(title, body);   /// TODO : setting on app.config?
             }
 
             catch (Exception ex)
@@ -118,9 +118,9 @@ namespace CloudBread_Scheduler
         }
 
         //////////////////////////////////////////////////////////////
-        /// @brief Timer trigger of testProcess. one time test on startup and every two min. trigger
+        /// @brief Timer trigger of testProcess. one time test on startup and every two min(set it "0 */2 * * * *") . trigger
         //////////////////////////////////////////////////////////////
-        public static void testProcess([TimerTrigger("0 */2 * * * *", RunOnStartup = true)] TimerInfo timer)
+        public static void testProcess([TimerTrigger("0 */5 * * * *", RunOnStartup = true)] TimerInfo timer)
         {
             try
             {
