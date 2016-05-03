@@ -326,7 +326,7 @@ namespace CloudBread_Scheduler
         }
 
         /// Timer trigger of CBProcessDPA_DPUTrigger
-        public static void CBProcessDAU_DARPUTrigger([TimerTrigger("0 5 12 * * *")] TimerInfo timer) // every day 12:05 
+        public static void CBProcessDPA_DPUTrigger([TimerTrigger("0 5 12 * * *")] TimerInfo timer) // every day 12:05 
         {
             try
             {
@@ -342,7 +342,7 @@ namespace CloudBread_Scheduler
 
                 /// send message to queue - DPA
                 CBBatchJob bj = new CBBatchJob();
-                bj.JobID = "CDBatch-DPU";
+                bj.JobID = "CDBatch-DPA";
                 bj.JobTitle = "Daily Paying Amount Batch";
                 bj.JobTriggerDT = DateTimeOffset.UtcNow.ToString();
                 bj.JobTrackID = Guid.NewGuid().ToString();
@@ -367,7 +367,7 @@ namespace CloudBread_Scheduler
         }
 
         /// Timer trigger of CBProcessFPC_FPUTrigger
-        public static void CBProcessDAU_DARPUTrigger([TimerTrigger("0 5 12 * * *")] TimerInfo timer) // every day 12:05 
+        public static void CBProcessFPC_FPUTrigger([TimerTrigger("0 5 12 * * *")] TimerInfo timer) // every day 12:05 
         {
             try
             {
