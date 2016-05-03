@@ -273,5 +273,46 @@ namespace CloudBread_Scheduler
 
         }
 
+        /// Timer trigger of CBProcessDPA_DPUTrigger
+        public static void CBProcessDAU_DARPUTrigger([TimerTrigger("0 5 12 * * *")] TimerInfo timer) // every day 12:05 
+        {
+            try
+            {
+                Console.WriteLine("CB task timer starting at CBProcessDPA_DPUTrigger");
+
+                // send message to cloudbread-batch queue
+                /// Azure Queue Storage connection retry policy
+                var queueStorageRetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(2), 10);
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.ConnectionStrings["AzureWebJobsStorage"].ConnectionString);
+                CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
+                queueClient.DefaultRequestOptions.RetryPolicy = queueStorageRetryPolicy;
+                CloudQueue queue = queueClient.GetQueueReference("cloudbread-batch");
+
+                /// send message to queue - DPA
+                CBBatchJob bj = new CBBatchJob();
+                bj.JobID = "CDBatch-DPU";
+                bj.JobTitle = "Daily Paying Amount Batch";
+                bj.JobTriggerDT = DateTimeOffset.UtcNow.ToString();
+                bj.JobTrackID = Guid.NewGuid().ToString();
+                queue.AddMessage(new CloudQueueMessage(JsonConvert.SerializeObject(bj)));
+
+                /// send message to queue - DPU
+                bj.JobID = "CDBatch-DPU";
+                bj.JobTitle = "Daily Paying User Batch";
+                bj.JobTriggerDT = DateTimeOffset.UtcNow.ToString();
+                bj.JobTrackID = Guid.NewGuid().ToString();
+                queue.AddMessage(new CloudQueueMessage(JsonConvert.SerializeObject(bj)));
+
+                Console.WriteLine("CB task timer done at CBProcessDPA_DPUTrigger");
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+
+        }
+
     }
 }
