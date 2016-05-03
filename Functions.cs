@@ -106,6 +106,19 @@ namespace CloudBread_Scheduler
                         }
                         break;
 
+                    case "CDBatch-DPU":
+
+                        using (SqlConnection connection = new SqlConnection(CBSchedulerDBConnectionString))
+                        {
+                            using (SqlCommand command = new SqlCommand("sspBatchDPU", connection))
+                            {
+                                connection.OpenWithRetry(retryPolicy);
+                                command.ExecuteNonQueryWithRetry(retryPolicy);
+                            }
+                            connection.Close();
+                        }
+                        break;
+
                     case "CDBatch-FPC":
 
                         using (SqlConnection connection = new SqlConnection(CBSchedulerDBConnectionString))
@@ -124,19 +137,6 @@ namespace CloudBread_Scheduler
                         using (SqlConnection connection = new SqlConnection(CBSchedulerDBConnectionString))
                         {
                             using (SqlCommand command = new SqlCommand("sspBatchFPU", connection))
-                            {
-                                connection.OpenWithRetry(retryPolicy);
-                                command.ExecuteNonQueryWithRetry(retryPolicy);
-                            }
-                            connection.Close();
-                        }
-                        break;
-
-                    case "CDBatch-DPU":
-
-                        using (SqlConnection connection = new SqlConnection(CBSchedulerDBConnectionString))
-                        {
-                            using (SqlCommand command = new SqlCommand("sspBatchDPU", connection))
                             {
                                 connection.OpenWithRetry(retryPolicy);
                                 command.ExecuteNonQueryWithRetry(retryPolicy);
