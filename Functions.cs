@@ -80,6 +80,19 @@ namespace CloudBread_Scheduler
                         }
                         break;
 
+                    case "CDBatch-Dormant":
+
+                        using (SqlConnection connection = new SqlConnection(CBSchedulerDBConnectionString))
+                        {
+                            using (SqlCommand command = new SqlCommand("sspBatchDormant", connection))
+                            {
+                                connection.OpenWithRetry(retryPolicy);
+                                command.ExecuteNonQueryWithRetry(retryPolicy);
+                            }
+                            connection.Close();
+                        }
+                        break;
+
                     case "CDBatch-HAU":
 
                         using (SqlConnection connection = new SqlConnection(CBSchedulerDBConnectionString))
