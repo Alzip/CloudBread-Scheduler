@@ -145,6 +145,32 @@ namespace CloudBread_Scheduler
                         }
                         break;
 
+                    case "CDBatch-MAU":
+
+                        using (SqlConnection connection = new SqlConnection(CBSchedulerDBConnectionString))
+                        {
+                            using (SqlCommand command = new SqlCommand("sspBatchMAU", connection))
+                            {
+                                connection.OpenWithRetry(retryPolicy);
+                                command.ExecuteNonQueryWithRetry(retryPolicy);
+                            }
+                            connection.Close();
+                        }
+                        break;
+
+                    case "CDBatch-MPU":
+
+                        using (SqlConnection connection = new SqlConnection(CBSchedulerDBConnectionString))
+                        {
+                            using (SqlCommand command = new SqlCommand("sspBatchMPU", connection))
+                            {
+                                connection.OpenWithRetry(retryPolicy);
+                                command.ExecuteNonQueryWithRetry(retryPolicy);
+                            }
+                            connection.Close();
+                        }
+                        break;
+
                     case "CDBatch-HAU":
 
                         using (SqlConnection connection = new SqlConnection(CBSchedulerDBConnectionString))
