@@ -577,7 +577,7 @@ namespace CloudBread_Scheduler
                 bj.JobTrackID = Guid.NewGuid().ToString();
                 queue.AddMessage(new CloudQueueMessage(JsonConvert.SerializeObject(bj)));
 
-                Console.WriteLine("CB task timer done at CBProcessDormantTrigger");
+                Console.WriteLine("CB task timer done at CBProcessBPITrigger");
             }
             catch (Exception ex)
             {
