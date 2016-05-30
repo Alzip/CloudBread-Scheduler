@@ -541,5 +541,39 @@ namespace CloudBread_Scheduler
 
         }
 
+        /// Timer trigger of CBProcessBPITrigger
+        public static void CBProcessBPITrigger([TimerTrigger("0 5 12 * * *")] TimerInfo timer) // every day 12:05 
+        {
+            try
+            {
+                Console.WriteLine("CB task timer starting at CBProcessBPITrigger");
+
+                // send message to cloudbread-batch queue
+                /// Azure Queue Storage connection retry policy
+                var queueStorageRetryPolicy = new ExponentialRetry(TimeSpan.FromSeconds(2), 10);
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConfigurationManager.ConnectionStrings["AzureWebJobsStorage"].ConnectionString);
+                CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
+                queueClient.DefaultRequestOptions.RetryPolicy = queueStorageRetryPolicy;
+                CloudQueue queue = queueClient.GetQueueReference("cloudbread-batch");
+
+                /// send message to queue - Dormant
+                CBBatchJob bj = new CBBatchJob();
+                bj.JobID = "CDBatch-BPI";
+                bj.JobTitle = "Best Purchased Item Batch";
+                bj.JobTriggerDT = DateTimeOffset.UtcNow.ToString();
+                bj.JobTrackID = Guid.NewGuid().ToString();
+                queue.AddMessage(new CloudQueueMessage(JsonConvert.SerializeObject(bj)));
+
+                Console.WriteLine("CB task timer done at CBProcessDormantTrigger");
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+
+        }
+
     }
 }
