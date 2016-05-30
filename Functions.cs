@@ -197,6 +197,19 @@ namespace CloudBread_Scheduler
                         }
                         break;
 
+                    case "CDBatch-BPI":
+
+                        using (SqlConnection connection = new SqlConnection(CBSchedulerDBConnectionString))
+                        {
+                            using (SqlCommand command = new SqlCommand("sspBatchBPI", connection))
+                            {
+                                connection.OpenWithRetry(retryPolicy);
+                                command.ExecuteNonQueryWithRetry(retryPolicy);
+                            }
+                            connection.Close();
+                        }
+                        break;
+
                     case "CDBatch-HAU":
 
                         using (SqlConnection connection = new SqlConnection(CBSchedulerDBConnectionString))
