@@ -473,7 +473,7 @@ namespace CloudBread_Scheduler
         }
 
         /// Timer trigger of CBProcessMAU_MPUTrigger
-        public static void CBProcessMAU_MPUTrigger([TimerTrigger("0 5 12 * * *")] TimerInfo timer) // every day 12:05 
+        public static void CBProcessMAU_MPUTrigger([TimerTrigger("0 0 0 1 */1 *")] TimerInfo timer) // every one month
         {
             try
             {
@@ -514,7 +514,7 @@ namespace CloudBread_Scheduler
         }
 
         /// Timer trigger of CBProcessWAU_WPUTrigger
-        public static void CBProcessWAU_WPUTrigger([TimerTrigger("0 5 12 * * *")] TimerInfo timer) // every day 12:05 
+        public static void CBProcessWAU_WPUTrigger([TimerTrigger("0 0 0 */7 * *")] TimerInfo timer) // every seven day
         {
             try
             {
